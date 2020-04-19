@@ -1,41 +1,54 @@
 import React, { Component } from "react";
-import { CardList } from "./components/card-list"; // тухайн компонэнтод байгаа .jsx фөйлын нэр нь index бол энэ комп - ийг дуудахдаа файлын нэрийг бичиж өгөх албагүй
+
+import { CardList } from "./components/card-list";
 import { SearchBox } from "./components/search-box";
+import { BrowserRouter, Route, Link, Switch } from "react-router-dom";
 import "./App.css";
+
+import Course from "./components/course";
 
 export default class App extends Component {
   constructor() {
     super();
+
     this.state = {
-      robots: [],
+      course: [],
       searchField: ""
     };
-    // react developer - ийн хувьд хамгийн чухал ажил бол энэхүү state төлвүүдийг аль компонэнтод хадгалах вэ гэдгийг боддож олох явдал юм.
   }
+
   onSearchChanged = event => {
     this.setState({ searchField: event.target.value });
-    // console.log(event.target.value);
   };
 
-  // render() - ийн дараа ажилдаг тусгай функц
   componentDidMount() {
-    fetch("https://jsonplaceholder.typicode.com/users")
+    fetch("https://1234.mn/api/courses")
       .then(response => response.json())
-      .then(data => this.setState({ robots: data }));
+      .then(data => this.setState({ course: data }));
   }
 
   render() {
-    // console.log(this.state.robots);
-    const { robots, searchField } = this.state;
-    const filteredRobots = robots.filter(el =>
-      el.name.toLowerCase().includes(searchField)
+    const { course, searchField } = this.state;
+
+    const filteredcourse = course.filter(el =>
+      el.ner.toLowerCase().includes(searchField)
     );
+
     return (
-      <div className="App">
-        <h1>Хайлтууд</h1>
-        <SearchBox onSearch={this.onSearchChanged} />
-        <CardList robots={filteredRobots} />
-      </div>
+      <BrowserRouter>
+        <div className="App">
+          <Link to="/">Нүүр</Link>
+          <Switch>
+            <Route path="/course/:id" component={Course} />
+
+            <Route path="/">
+              <h1>1234.mn сургалтууд</h1>
+              <SearchBox onSearch={this.onSearchChanged} />
+              <CardList courses={filteredcourse} />
+            </Route>
+          </Switch>
+        </div>
+      </BrowserRouter>
     );
   }
 }
